@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userProfileReducer from "./slices/userProfileSlice";
+import skincareReducer from "./slices/skincareSlice";
 
-export const store = configureStore ({
+export const store = configureStore({
     reducer: {
-        userProfile: userProfileReducer
+        userProfile: userProfileReducer,
+        skincare: skincareReducer,
     }, 
 });
 

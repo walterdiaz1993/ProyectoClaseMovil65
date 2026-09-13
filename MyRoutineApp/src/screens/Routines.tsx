@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ScreenWrapper from "../components/ScreenWrapper";
 import SectionTitle from "../components/SectionTitle";
 import { useTheme } from "../contexts/ThemeContext";
-import { useSkincare } from "../contexts/SkincareContext";
-import { CATEGORY_LABELS, Routine } from "../utils/types/Skincare";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { addToRoutine, removeFromRoutine } from "../store/slices/skincareSlice";
+import { CATEGORY_LABELS } from "../utils/types/Skincare";
 
 type RoutineSectionProps = {
   title: string;
@@ -24,7 +24,7 @@ function RoutineSection({
   onAdd,
   onRemove,
 }: RoutineSectionProps) {
-  const { products } = useSkincare();
+  const products = useAppSelector((state) => state.skincare.products);
   const { colors } = useTheme();
 
   const routineProducts = productIds
@@ -113,36 +113,22 @@ function RoutineSection({
 }
 
 export default function Routines() {
-  const { products } = useSkincare();
+  const dispatch = useAppDispatch();
+  const { products, routine } = useAppSelector((state) => state.skincare);
   const { colors } = useTheme();
-
-  // EJERCICIO: reemplaza este estado local por Redux
-  // (createSlice + useAppSelector / useAppDispatch).
-  // Acciones esperadas: addToRoutine y removeFromRoutine.
-  // Así la rutina también podrá verse en la pantalla Inicio.
-  const [routine, setRoutine] = useState<Routine>({
-    morning: [],
-    night: [],
-  });
 
   const handleAddToRoutine = (
     type: "morning" | "night",
     productId: string,
   ) => {
-    setRoutine((prev) => {
-      if (prev[type].includes(productId)) return prev;
-      return { ...prev, [type]: [...prev[type], productId] };
-    });
+    dispatch(addToRoutine({ type, productId }));
   };
 
   const handleRemoveFromRoutine = (
     type: "morning" | "night",
     productId: string,
   ) => {
-    setRoutine((prev) => ({
-      ...prev,
-      [type]: prev[type].filter((id) => id !== productId),
-    }));
+    dispatch(removeFromRoutine({ type, productId }));
   };
 
   return (
